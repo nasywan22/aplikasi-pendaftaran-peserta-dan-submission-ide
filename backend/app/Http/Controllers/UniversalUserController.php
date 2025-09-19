@@ -9,8 +9,8 @@ class UniversalUserController extends Controller
     public function register(Request $request) {
         $dataHasilValidasi = $request->validate([
             "nama" => "required|string",
-            "email"=> "required|email|unique:users,email",
-            "password"=> "required|confirmed",
+            "email"=> "required|email",
+            "password"=> "required",
         ]);
 
         $nama = $dataHasilValidasi["nama"];

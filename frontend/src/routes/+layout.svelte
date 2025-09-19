@@ -1,6 +1,6 @@
 <script>
 	import '../app.css';
-	import Toaster from './../../node_modules/svelte-sonner/dist/Toaster.svelte';
+	import { Toaster } from '$lib/components/ui/sonner/index';
 	let { children } = $props();
 </script>
 

@@ -2,6 +2,9 @@
 	// SHADCN IMPORTS
 	import { toast } from 'svelte-sonner';
 	import { Button } from "$lib/components/ui/button/index.js";
+	
+	// icons
+	import Icon from "@iconify/svelte";
 
 	// axios
 	import axios, { type AxiosResponse } from 'axios';
@@ -243,7 +246,13 @@
 					type="submit"
 					class={`w-full rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200`}
 				>
-					{isLogin ? 'Masuk' : 'Daftar'}
+					{#if sedangMengirimKeServer}
+						<span class="flex items-center justify-center animate-spin">
+							<Icon icon="picon:spinner" width="8" height="8" />
+						</span>
+					{:else}
+						{isLogin ? 'Masuk' : 'Daftar'}
+					{/if}
 				</Button>
 			</form>
 
