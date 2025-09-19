@@ -19,7 +19,7 @@
             isLoading = true;
             const response:  AxiosResponse<any, any, {}> = await axios.post("http://localhost:8000/api/usercheck");
         } catch (error) {
-            goto("/logReg");
+            goto("/logReg?lastPage=formSubmission");
         }
     });
 </script>

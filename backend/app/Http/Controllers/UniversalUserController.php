@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\ValidateFormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 
 class UniversalUserController extends Controller
 {
-    public function register(Request $request) {
-        $dataHasilValidasi = $request->validate([
-            "nama" => "required|string",
-            "email"=> "required|email",
-            "password"=> "required",
-        ]);
+    public function register(ValidateFormRequest $request): JsonResponse
+    {
+        $dataHasilValidasi = $request->validated();
 
         $nama = $dataHasilValidasi["nama"];
         $email = $dataHasilValidasi["email"];
@@ -34,5 +34,22 @@ class UniversalUserController extends Controller
                 "error" => $e->getMessage()
             ], 422);
         }
+    }
+
+    public function login(ValidateFormRequest $request): JsonResponse
+    {
+        $dataHasilValidasi = $request->validated();
+
+        if (!Auth::attempt($dataHasilValidasi)) {
+            return response()->json([
+                "message"=> "Kayaknya antara email atau password kamu ada yang salah nih... coba cek lagi",
+            ], 401);
+        }
+
+        $request->session()->regenerate();
+
+        return response()->json([
+            "message" => "Berhasil login! :D"
+        ], 200);
     }
 }

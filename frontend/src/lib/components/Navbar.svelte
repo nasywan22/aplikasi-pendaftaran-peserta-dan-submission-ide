@@ -15,16 +15,7 @@
       <!-- Desktop Navigation -->
       <nav class="hidden md:block">
         <div class="ml-10 flex items-baseline space-x-8">
-          <a href="/" class="hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-            Beranda
-          </a>
-          <a href="/explore" class="hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-            Jelajahi Ide
-          </a>
-          <a href="/about" class="hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-            Tentang
-          </a>
-          <a href="/submit" class="bg-accent text-accent-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
+          <a href="/formSubmission" class="bg-accent text-accent-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
             Submit Ide
           </a>
         </div>

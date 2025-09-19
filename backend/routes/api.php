@@ -10,5 +10,7 @@ Route::post('/usercheck', function (Request $request) {
     ]);
 })->middleware('auth:sanctum');
 
-Route::post('/register', [\App\Http\Controllers\UniversalUserController::class, 'register'])
-    ->middleware(['guest', 'throttle:6,1']);
+Route::middleware(['guest', 'throttle:6,1'])->group(function () {
+    Route::post('/register', [\App\Http\Controllers\UniversalUserController::class, 'register']);
+    Route::post('/login', [\App\Http\Controllers\UniversalUserController::class, 'login']);
+});

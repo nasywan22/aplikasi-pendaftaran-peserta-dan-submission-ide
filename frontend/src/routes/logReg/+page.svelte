@@ -1,13 +1,17 @@
 <script lang="ts">
 	// SHADCN IMPORTS
 	import { toast } from 'svelte-sonner';
-	import { Button } from "$lib/components/ui/button/index.js";
-	
+	import { Button } from '$lib/components/ui/button/index.js';
+
 	// icons
-	import Icon from "@iconify/svelte";
+	import Icon from '@iconify/svelte';
 
 	// axios
 	import axios, { type AxiosResponse } from 'axios';
+
+	// svelte tools
+	import { onMount } from 'svelte';
+    import { goto } from "$app/navigation";
 
 	// TYPES
 	interface dataUserTypes {
@@ -27,28 +31,56 @@
 	});
 	let isPolicyChecked = $state<boolean>(false);
 	let sedangMengirimKeServer = $state<boolean>(false);
+	let apakahBerhasilLogin = $state<boolean>(false);
+	let PageTerakhir = $state<string>('');
 
 	// HOOKS HANDLERS
+	onMount(() => {
+		PageTerakhir = ambilPageTujuanTerakhirDiParameter();
+	});
+
 	$effect(() => {
 		if (sedangMengirimKeServer && !isLogin) {
-			register();
-		} else {}
+			AksiAutentikasi('register');
+		} else if (sedangMengirimKeServer && isLogin) {
+			ambilCSRFCookie();
+			AksiAutentikasi('login');
+			if (apakahBerhasilLogin) goto(`/${PageTerakhir}`);
+		}
 	});
 
 	// FUNCTIONS
-	async function register() {
-		try {
-			const response: AxiosResponse<any, any, {}> = await axios.post(
-				'http://localhost:8000/api/register',
-				dataUser
-			);
+	function ambilPageTujuanTerakhirDiParameter() {
+		const seluruhData: string = window.location.search;
+		const parameter: URLSearchParams = new URLSearchParams(seluruhData);
+		const pageTerakhir: string | null = parameter.get('lastPage');
+		return pageTerakhir == null ? "" : pageTerakhir;
+	}
 
+	async function ambilCSRFCookie() {
+		try {
+			await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	async function AksiAutentikasi(jenisAutentikasi: string) {
+		try {
+			await axios.post(
+				`http://localhost:8000/api/${jenisAutentikasi}`,
+				dataUser,
+				{ withCredentials: true }
+			);
+			
+			if (isLogin) apakahBerhasilLogin = true;
 			isLogin = true;
+
 			const pesan = 'Akun mu berhasil dibuat nih :)';
 			const deskripsi = 'Silahkan login yaa...';
 			notifError(pesan, deskripsi);
 		} catch (error) {
-			const pesanErr = 'Waduh ada yang salah nih pas ngedaftarin :(';
+			const pesanErr = 'Waduh ada yang salah nih di sistem kitanya :(';
 			const deskripsiErr = 'Silahkan coba lagi yaa...';
 			notifError(pesanErr, deskripsiErr);
 			console.error(error);
@@ -62,7 +94,7 @@
 			description: deskripsi,
 			duration: 5000,
 			position: 'top-center'
-		})
+		});
 	}
 
 	const apakahInputNamaHanyaBerupaHuruf = (): boolean => {
@@ -105,13 +137,7 @@
 			const deskripsi: string = 'Coba cek ulang dehh...';
 			notifError(pesan, deskripsi);
 		}
-
-		if (isLogin) {
-			// login
-		} else {
-			// register
-			sedangMengirimKeServer = true;
-		}
+		sedangMengirimKeServer = true;
 	};
 </script>
 
@@ -241,13 +267,13 @@
 
 				<!-- Submit Button -->
 				<Button
-					disabled={!isPolicyChecked}
+					disabled={!isPolicyChecked && !isLogin}
 					variant="default"
 					type="submit"
 					class={`w-full rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200`}
 				>
 					{#if sedangMengirimKeServer}
-						<span class="flex items-center justify-center animate-spin">
+						<span class="flex animate-spin items-center justify-center">
 							<Icon icon="picon:spinner" width="8" height="8" />
 						</span>
 					{:else}
