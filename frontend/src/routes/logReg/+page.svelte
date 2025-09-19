@@ -1,6 +1,6 @@
 <script lang="ts">
 	// SHADCN IMPORTS
-	import { toast } from '$lib/components/ui/sonner/index.js';
+	import { toast } from 'svelte-sonner';
 	import { Button } from "$lib/components/ui/button/index.js";
 
 	// axios
@@ -55,7 +55,11 @@
 	}
 
 	function notifError(pesan: string, deskripsi: string) {
-		toast
+		toast.error(pesan, {
+			description: deskripsi,
+			duration: 5000,
+			position: 'top-center'
+		})
 	}
 
 	const apakahInputNamaHanyaBerupaHuruf = (): boolean => {
