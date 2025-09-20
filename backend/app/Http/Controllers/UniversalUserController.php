@@ -47,12 +47,10 @@ class UniversalUserController extends Controller
             ], 401);
         }
 
-        $user = $request->user();
-        $token = $user->createToken("auth_token")->plainTextToken;
+        $request->session()->regenerate();
 
         return response()->json([
             "message" => "Berhasil login! :D",
-            "token" => $token
         ], 200);
     }
 }

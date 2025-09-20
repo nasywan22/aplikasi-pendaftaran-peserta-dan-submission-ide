@@ -40,13 +40,22 @@
 
 	$effect(() => {
 		if (sedangMengirimKeServer && !isLogin) {
-			AksiAutentikasi('register');
+			AksiAutentikasi('api/register');
 		} else if (sedangMengirimKeServer && isLogin) {
+			ambilCSRFCookie();
 			AksiAutentikasi('login');
 		}
 	});
 
 	// FUNCTIONS
+	async function ambilCSRFCookie() {
+		try {
+			await axios.get('/sanctum/csrf-cookie');
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
 	function ambilPageTujuanTerakhirDiParameter() {
 		const seluruhData: string = window.location.search;
 		const parameter: URLSearchParams = new URLSearchParams(seluruhData);
@@ -57,28 +66,35 @@
 	async function AksiAutentikasi(jenisAutentikasi: string) {
 		try {
 			const response: AxiosResponse<any, any, {}> = await axios.post(
-				`http://localhost:8000/api/${jenisAutentikasi}`,
+				`/${jenisAutentikasi}`,
 				dataUser
 			);
 
+			// data response
 			const data = await response.data;
-			const { message, token } = data;
+			const { message } = data;
 
-			if (token) localStorage.setItem('token', token);
-
+			// set tracker keberhasilan login
 			if (isLogin) apakahBerhasilLogin = true;
 			isLogin = true;
 
+			// notifikasi
 			const pesan = isLogin ? message : 'Akun mu berhasil dibuat nih :D';
 			const deskripsi = isLogin ? 'Selamat datang di InnovaHub' : 'Silahkan masuk sekarang';
 			notifError(pesan, deskripsi);
+
+			// kembali ke halaman tujuan sebelumnya
 			if (apakahBerhasilLogin) goto(`/${PageTerakhir}`);
 		} catch (error) {
+			// notifikasi error
 			const pesanErr = 'Waduh ada yang salah nih di sistem kitanya :(';
 			const deskripsiErr = 'Silahkan coba lagi yaa...';
 			notifError(pesanErr, deskripsiErr);
+
+			// print error di console browser
 			console.error(error);
 		} finally {
+			// menghapus status pengiriman ke server
 			sedangMengirimKeServer = false;
 		}
 	}

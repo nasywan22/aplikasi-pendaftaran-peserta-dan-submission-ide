@@ -20,8 +20,9 @@
     onMount(async () => {
         try {
             isLoading = true;
-            const response:  AxiosResponse<any, any, {}> = await api.post("http://localhost:8000/api/usercheck");
+            const response:  AxiosResponse<any, any, {}> = await api.post("/user");
             const data = await response.data;
+            
             user = data;
             isLoading = false;
         } catch (error) {
