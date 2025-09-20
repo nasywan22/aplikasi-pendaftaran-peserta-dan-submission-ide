@@ -81,7 +81,7 @@
 			// notifikasi
 			const pesan = isLogin ? message : 'Akun mu berhasil dibuat nih :D';
 			const deskripsi = isLogin ? 'Selamat datang di InnovaHub' : 'Silahkan masuk sekarang';
-			notifError(pesan, deskripsi);
+			notifSuccess(pesan, deskripsi);
 
 			// kembali ke halaman tujuan sebelumnya
 			if (apakahBerhasilLogin) goto(`/${PageTerakhir}`);
@@ -97,6 +97,14 @@
 			// menghapus status pengiriman ke server
 			sedangMengirimKeServer = false;
 		}
+	}
+
+	function notifSuccess(pesan: string, deskripsi: string) {
+		toast.success(pesan, {
+			description: deskripsi,
+			duration: 5000,
+			position: 'top-center'
+		});
 	}
 
 	function notifError(pesan: string, deskripsi: string) {
