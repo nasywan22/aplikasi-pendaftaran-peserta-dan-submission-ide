@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use  illuminate\Http\Request;
 
 Route::middleware(['guest', 'throttle:6,1'])
     ->post('/login', [\App\Http\Controllers\UniversalUserController::class, 'login']);

@@ -7,7 +7,7 @@
 	import Icon from '@iconify/svelte';
 
 	// axios
-	import axios from '$lib/axiosConfig';
+	import api from '$lib/axiosConfig';
 	import { type AxiosResponse } from 'axios';
 
 	// svelte tools
@@ -50,7 +50,7 @@
 	// FUNCTIONS
 	async function ambilCSRFCookie() {
 		try {
-			await axios.get('/sanctum/csrf-cookie');
+			await api.get('/sanctum/csrf-cookie');
 		} catch (error) {
 			console.error(error);
 		}
@@ -63,9 +63,22 @@
 		return pageTerakhir == null ? '' : pageTerakhir;
 	}
 
+	function ambilCookie(cookieName: string) {
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${cookieName}=`);
+
+		if (parts.length === 2) {
+			const last = parts.pop();
+			if (last) {
+				return decodeURIComponent(last.split(';').shift()!);
+			}
+		}
+		return undefined;
+	}
+
 	async function AksiAutentikasi(jenisAutentikasi: string) {
 		try {
-			const response: AxiosResponse<any, any, {}> = await axios.post(
+			const response: AxiosResponse<any, any, {}> = await api.post(
 				`/${jenisAutentikasi}`,
 				dataUser
 			);

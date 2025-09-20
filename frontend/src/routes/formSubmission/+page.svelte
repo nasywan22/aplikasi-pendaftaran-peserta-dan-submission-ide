@@ -3,7 +3,7 @@
 	import { onMount } from "svelte";
 
     // axios
-    import api from "$lib/axiosConfig";
+	import api from "$lib/axiosConfig";
     import type { AxiosResponse } from "axios";
 
     // navigation
