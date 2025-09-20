@@ -9,6 +9,9 @@
     // navigation
     import { goto } from "$app/navigation";
 
+    // HOOKS DATA
+    let user = $state<any>(null);
+
     // NON HOOKS DATA
     let isLoading = $state<boolean>(false);
 
@@ -17,7 +20,9 @@
     onMount(async () => {
         try {
             isLoading = true;
-            const response:  AxiosResponse<any, any, {}> = await axios.post("http://localhost:8000/api/usercheck");
+            const response:  AxiosResponse<any, any, {}> = await axios.get("http://localhost:8000/api/usercheck");
+            const data = await response.data;
+            user = data;
         } catch (error) {
             goto("/logReg?lastPage=formSubmission");
         }
@@ -27,5 +32,6 @@
 {#if isLoading}
     <p>Loading...</p>
 {:else}
+    <p>{user}</p>
      <p>page form submission</p>
 {/if}

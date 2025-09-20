@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ValidateFormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
+use App\Models\User;
 
 class UniversalUserController extends Controller
 {
@@ -18,7 +19,7 @@ class UniversalUserController extends Controller
         $password = $dataHasilValidasi["password"];
 
         try {
-            $user = \App\Models\User::create([
+            $user = User::create([
                 "name" => $nama,
                 "email" => $email,
                 "password" => bcrypt($password),
@@ -46,10 +47,12 @@ class UniversalUserController extends Controller
             ], 401);
         }
 
-        $request->session()->regenerate();
+        $user = Auth::user();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         return response()->json([
-            "message" => "Berhasil login! :D"
+            "message" => "Berhasil login! :D",
+            "token" => $token
         ], 200);
     }
 }

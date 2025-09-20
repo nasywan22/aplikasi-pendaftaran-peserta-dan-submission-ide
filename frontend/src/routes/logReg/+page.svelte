@@ -15,19 +15,17 @@
 
 	// TYPES
 	interface dataUserTypes {
-		nama: string;
+		nama?: string;
 		email: string;
 		password: string;
-		confirmPassword: string;
+		confirmPassword?: string;
 	}
 
 	// HOOKS
 	let isLogin = $state<boolean>(true);
 	let dataUser = $state<dataUserTypes>({
-		nama: '',
 		email: '',
 		password: '',
-		confirmPassword: ''
 	});
 	let isPolicyChecked = $state<boolean>(false);
 	let sedangMengirimKeServer = $state<boolean>(false);
@@ -43,7 +41,6 @@
 		if (sedangMengirimKeServer && !isLogin) {
 			AksiAutentikasi('register');
 		} else if (sedangMengirimKeServer && isLogin) {
-			ambilCSRFCookie();
 			AksiAutentikasi('login');
 			if (apakahBerhasilLogin) goto(`/${PageTerakhir}`);
 		}
@@ -57,27 +54,23 @@
 		return pageTerakhir == null ? "" : pageTerakhir;
 	}
 
-	async function ambilCSRFCookie() {
-		try {
-			await axios.get('http://localhost:8000/sanctum/csrf-cookie');
-		} catch (error) {
-			console.error(error);
-		}
-	}
-
 	async function AksiAutentikasi(jenisAutentikasi: string) {
 		try {
-			await axios.post(
+			const response: AxiosResponse<any, any, {}> = await axios.post(
 				`http://localhost:8000/api/${jenisAutentikasi}`,
 				dataUser,
-				{ withCredentials: true }
 			);
+
+			const data = await response.data;
+			const { message, token } = data;
+
+			if (token) localStorage.setItem('token', token);
 			
 			if (isLogin) apakahBerhasilLogin = true;
 			isLogin = true;
 
-			const pesan = 'Akun mu berhasil dibuat nih :)';
-			const deskripsi = 'Silahkan login yaa...';
+			const pesan = isLogin ? message : 'Akun mu berhasil dibuat nih :D';
+			const deskripsi = isLogin ? 'Selamat datang di InnovaHub' : 'Silahkan masuk sekarang';
 			notifError(pesan, deskripsi);
 		} catch (error) {
 			const pesanErr = 'Waduh ada yang salah nih di sistem kitanya :(';
@@ -97,8 +90,8 @@
 		});
 	}
 
-	const apakahInputNamaHanyaBerupaHuruf = (): boolean => {
-		return /^[a-zA-Z]+$/.test(dataUser.nama);
+	const apakahInputNamaHanyaBerupaHuruf = (nama: string): boolean => {
+		return /^[a-zA-Z]+$/.test(nama);
 	};
 
 	const cekFormatEmail = (): boolean => {
@@ -120,8 +113,9 @@
 		const apakahPasswordSama = dataUser.password === dataUser.confirmPassword;
 
 		if (!apakahUserPunyaData) return false;
-		if (!apakahInputNamaHanyaBerupaHuruf) return false;
+		if (dataUser.nama && !apakahInputNamaHanyaBerupaHuruf(dataUser.nama)) return false;
 		if (!cekFormatEmail) return false;
+
 		if (!isLogin) {
 			if (!apakahPasswordSama) return false;
 		}
