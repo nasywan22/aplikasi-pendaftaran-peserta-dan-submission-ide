@@ -1,9 +1,18 @@
 import axios from 'axios';
 
-const token = localStorage.getItem('token');
-if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
-axios.defaults.withCredentials = true;
+const api = axios.create({
+	baseURL: 'http://localhost:8000',
+	withCredentials: true
+});
 
-export default axios;
+api.interceptors.request.use((config) => {
+	if (typeof window !== 'undefined') {
+		const token = localStorage.getItem('token');
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`;
+		}
+	}
+	return config;
+});
+
+export default api;

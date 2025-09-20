@@ -7,11 +7,12 @@
 	import Icon from '@iconify/svelte';
 
 	// axios
-	import axios, { type AxiosResponse } from 'axios';
+	import axios from '$lib/axiosConfig';
+	import { type AxiosResponse } from 'axios';
 
 	// svelte tools
 	import { onMount } from 'svelte';
-    import { goto } from "$app/navigation";
+	import { goto } from '$app/navigation';
 
 	// TYPES
 	interface dataUserTypes {
@@ -25,7 +26,7 @@
 	let isLogin = $state<boolean>(true);
 	let dataUser = $state<dataUserTypes>({
 		email: '',
-		password: '',
+		password: ''
 	});
 	let isPolicyChecked = $state<boolean>(false);
 	let sedangMengirimKeServer = $state<boolean>(false);
@@ -42,7 +43,6 @@
 			AksiAutentikasi('register');
 		} else if (sedangMengirimKeServer && isLogin) {
 			AksiAutentikasi('login');
-			if (apakahBerhasilLogin) goto(`/${PageTerakhir}`);
 		}
 	});
 
@@ -51,27 +51,28 @@
 		const seluruhData: string = window.location.search;
 		const parameter: URLSearchParams = new URLSearchParams(seluruhData);
 		const pageTerakhir: string | null = parameter.get('lastPage');
-		return pageTerakhir == null ? "" : pageTerakhir;
+		return pageTerakhir == null ? '' : pageTerakhir;
 	}
 
 	async function AksiAutentikasi(jenisAutentikasi: string) {
 		try {
 			const response: AxiosResponse<any, any, {}> = await axios.post(
 				`http://localhost:8000/api/${jenisAutentikasi}`,
-				dataUser,
+				dataUser
 			);
 
 			const data = await response.data;
 			const { message, token } = data;
 
 			if (token) localStorage.setItem('token', token);
-			
+
 			if (isLogin) apakahBerhasilLogin = true;
 			isLogin = true;
 
 			const pesan = isLogin ? message : 'Akun mu berhasil dibuat nih :D';
 			const deskripsi = isLogin ? 'Selamat datang di InnovaHub' : 'Silahkan masuk sekarang';
 			notifError(pesan, deskripsi);
+			if (apakahBerhasilLogin) goto(`/${PageTerakhir}`);
 		} catch (error) {
 			const pesanErr = 'Waduh ada yang salah nih di sistem kitanya :(';
 			const deskripsiErr = 'Silahkan coba lagi yaa...';

@@ -3,7 +3,7 @@
 	import { onMount } from "svelte";
 
     // axios
-    import axios from "axios";
+    import api from "$lib/axiosConfig";
     import type { AxiosResponse } from "axios";
 
     // navigation
@@ -20,9 +20,10 @@
     onMount(async () => {
         try {
             isLoading = true;
-            const response:  AxiosResponse<any, any, {}> = await axios.get("http://localhost:8000/api/usercheck");
+            const response:  AxiosResponse<any, any, {}> = await api.post("http://localhost:8000/api/usercheck");
             const data = await response.data;
             user = data;
+            isLoading = false;
         } catch (error) {
             goto("/logReg?lastPage=formSubmission");
         }
