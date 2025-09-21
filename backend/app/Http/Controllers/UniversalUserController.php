@@ -7,12 +7,19 @@ use App\Http\Requests\ValidateFormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
 class UniversalUserController extends Controller
 {
     public function register(ValidateFormRequest $request): JsonResponse
     {
         $dataHasilValidasi = $request->validated();
+
+        if (!\App\Helpers\RecaptchaHelper::verifyCaptcha($request)) {
+            return response()->json([
+                "message" => "Captcha tidak valid",
+            ], 401);
+        }
 
         $nama = $dataHasilValidasi["nama"];
         $telepon = $dataHasilValidasi["telepon"];
@@ -42,6 +49,12 @@ class UniversalUserController extends Controller
     public function login(ValidateFormRequest $request): JsonResponse
     {
         $dataHasilValidasi = $request->validated();
+
+        if (!\App\Helpers\RecaptchaHelper::verifyCaptcha($request)) {
+            return response()->json([
+                "message" => "Captcha tidak valid",
+            ], 401);
+        }
 
         $dataHasilValidasi = [
             "email"=> $dataHasilValidasi["email"],

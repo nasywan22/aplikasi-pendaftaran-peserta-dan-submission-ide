@@ -14,21 +14,28 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
+	// import milik sendiri
+	import Captcha from '$lib/components/Captcha.svelte';
+
 	// TYPES
 	interface dataUserTypes {
 		name?: string;
 		email: string;
 		telepon?: string;
 		password: string;
+		'g-recaptcha-response': string;
 		confirmPassword?: string;
 	}
 
 	// HOOKS
-	let isLogin = $state<boolean>(true);
 	let dataUser = $state<dataUserTypes>({
 		email: '',
-		password: ''
+		password: '',
+		'g-recaptcha-response': ''
 	});
+
+	// trackers hooks
+	let isLogin = $state<boolean>(true);
 	let isPolicyChecked = $state<boolean>(false);
 	let sedangMengirimKeServer = $state<boolean>(false);
 	let apakahBerhasilLogin = $state<boolean>(false);
@@ -190,7 +197,7 @@
 		<div class="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
 			<!-- Toggle Buttons -->
 			<div class="mb-8 flex justify-center">
-				<div class="flex rounded-lg bg-gray-100 p-1 w-80">
+				<div class="flex w-80 rounded-lg bg-gray-100 p-1">
 					<button
 						onclick={() => (isLogin = true)}
 						class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 {isLogin
@@ -253,13 +260,17 @@
 							/>
 							<span class="ml-2 text-sm text-gray-600">Ingat saya</span>
 						</label>
-						<button type="button" onclick={() => {}} class="text-sm text-gray-600 underline hover:text-gray-900">
+						<button
+							type="button"
+							onclick={() => {}}
+							class="text-sm text-gray-600 underline hover:text-gray-900"
+						>
 							Lupa password?
 						</button>
 					</div>
 				{:else}
 					<!-- Register Form - 2 Column Layout -->
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 						<!-- Name Field -->
 						<div>
 							<label for="name" class="mb-1 block text-sm font-medium text-gray-700">
@@ -349,12 +360,16 @@
 					</div>
 				{/if}
 
+				<div class="flex justify-center">
+					<Captcha captchaToken={dataUser['g-recaptcha-response']}></Captcha>
+				</div>
+
 				<!-- Submit Button -->
 				<div class="flex justify-center">
 					<button
 						disabled={!isPolicyChecked && !isLogin}
 						type="submit"
-						class="w-full max-w-xs rounded-md px-8 py-2 text-sm font-medium transition-colors duration-200 bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+						class="w-full max-w-xs rounded-md bg-gray-900 px-8 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
 					>
 						{#if sedangMengirimKeServer}
 							<span class="flex animate-spin items-center justify-center">

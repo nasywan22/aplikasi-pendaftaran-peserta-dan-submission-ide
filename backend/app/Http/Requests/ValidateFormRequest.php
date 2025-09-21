@@ -26,6 +26,7 @@ class ValidateFormRequest extends FormRequest
             "telepon"=> "string|max:15",
             "email"=> "required|email",
             "password"=> "required",
+            "g-recaptcha-response"=> "required",
         ];
     }
 }
