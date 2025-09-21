@@ -12,7 +12,9 @@ declare global {
 					'error-callback'?: () => void;
 				}
 			): number;
+			reset(): void;
 		};
+		onCaptchaLoad?: () => void;
 	}
 }
 

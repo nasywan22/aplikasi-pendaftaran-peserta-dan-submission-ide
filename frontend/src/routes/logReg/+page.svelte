@@ -47,10 +47,10 @@
 	});
 
 	$effect(() => {
+		ambilCSRFCookie();
 		if (sedangMengirimKeServer && !isLogin) {
-			AksiAutentikasi('api/register');
+			AksiAutentikasi('register');
 		} else if (sedangMengirimKeServer && isLogin) {
-			ambilCSRFCookie();
 			AksiAutentikasi('login');
 		}
 	});
@@ -104,6 +104,9 @@
 			const deskripsi = isLogin ? 'Selamat datang di InnovaHub' : 'Silahkan masuk sekarang';
 			notifSuccess(pesan, deskripsi);
 
+			// reset semua input
+			resetSemuaInput();
+
 			// kembali ke halaman tujuan sebelumnya
 			if (apakahBerhasilLogin) goto(`/${PageTerakhir}`);
 		} catch (error) {
@@ -117,7 +120,18 @@
 		} finally {
 			// menghapus status pengiriman ke server
 			sedangMengirimKeServer = false;
+
+			// reset captcha
+			window.grecaptcha.reset();
 		}
+	}
+
+	function resetSemuaInput() {
+		dataUser = {
+			email: '',
+			password: '',
+			'g-recaptcha-response': ''
+		};
 	}
 
 	function notifSuccess(pesan: string, deskripsi: string) {
@@ -178,6 +192,10 @@
 			notifError(pesan, deskripsi);
 		}
 		sedangMengirimKeServer = true;
+	};
+
+	const tanganiTangkapTokenCaptcha = (token: string) => {
+		dataUser['g-recaptcha-response'] = token;	
 	};
 </script>
 
@@ -361,7 +379,7 @@
 				{/if}
 
 				<div class="flex justify-center">
-					<Captcha captchaToken={dataUser['g-recaptcha-response']}></Captcha>
+					<Captcha tangkapToken={tanganiTangkapTokenCaptcha}></Captcha>
 				</div>
 
 				<!-- Submit Button -->

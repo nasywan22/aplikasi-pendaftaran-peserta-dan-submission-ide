@@ -21,7 +21,7 @@ class UniversalUserController extends Controller
             ], 401);
         }
 
-        $nama = $dataHasilValidasi["nama"];
+        $nama = $dataHasilValidasi["name"];
         $telepon = $dataHasilValidasi["telepon"];
         $email = $dataHasilValidasi["email"];
         $password = $dataHasilValidasi["password"];

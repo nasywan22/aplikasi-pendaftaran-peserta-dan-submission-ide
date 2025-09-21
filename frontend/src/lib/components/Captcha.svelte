@@ -4,10 +4,9 @@
 
 	// .env
 	import { PUBLIC_GOOGLE_CAPTCHA_SITE_KEY } from '$env/static/public';
-	import { error } from 'console';
 
 	// exported variables (props)
-	let { captchaToken } = $props();
+	let { tangkapToken } = $props<{tangkapToken: (token: string) => void}>();
 
 	// local static variables
 	const siteKey: string = PUBLIC_GOOGLE_CAPTCHA_SITE_KEY;
@@ -23,14 +22,14 @@
 	// functions
 	function loadGoogleCaptchaScript(): Promise<void> {
 		return new Promise((resolve, reject) => {
+			window.onCaptchaLoad = () => resolve();
+
 			const script: HTMLScriptElement = document.createElement('script');
-			script.src = 'https://www.google.com/recaptcha/api.js';
+			script.src = 'https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit';
 			script.async = true;
 			script.defer = true;
 
-			script.onload = () => resolve();
 			script.onerror = () => reject("gagal ngeload captcha");
-
 			document.head.appendChild(script);
 		});
 	}
@@ -40,7 +39,7 @@
 			sitekey: siteKey,
 			size: 'normal',
 			callback: (token: string) => {
-				captchaToken = token;
+				tangkapToken(token);
 			}
 		});
 	}
