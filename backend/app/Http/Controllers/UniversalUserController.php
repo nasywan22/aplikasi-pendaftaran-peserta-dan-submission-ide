@@ -15,6 +15,7 @@ class UniversalUserController extends Controller
         $dataHasilValidasi = $request->validated();
 
         $nama = $dataHasilValidasi["nama"];
+        $telepon = $dataHasilValidasi["telepon"];
         $email = $dataHasilValidasi["email"];
         $password = $dataHasilValidasi["password"];
 
@@ -23,6 +24,7 @@ class UniversalUserController extends Controller
                 "name" => $nama,
                 "email" => $email,
                 "password" => bcrypt($password),
+                "nomor_telepon" => $telepon,
             ]);
 
             return response()->json([
@@ -40,6 +42,11 @@ class UniversalUserController extends Controller
     public function login(ValidateFormRequest $request): JsonResponse
     {
         $dataHasilValidasi = $request->validated();
+
+        $dataHasilValidasi = [
+            "email"=> $dataHasilValidasi["email"],
+            "password"=> $dataHasilValidasi["password"],
+        ];
 
         if (!Auth::attempt($dataHasilValidasi)) {
             return response()->json([

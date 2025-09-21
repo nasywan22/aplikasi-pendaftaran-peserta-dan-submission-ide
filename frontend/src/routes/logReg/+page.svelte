@@ -16,8 +16,9 @@
 
 	// TYPES
 	interface dataUserTypes {
-		nama?: string;
+		name?: string;
 		email: string;
+		telepon?: string;
 		password: string;
 		confirmPassword?: string;
 	}
@@ -151,7 +152,7 @@
 		const apakahPasswordSama = dataUser.password === dataUser.confirmPassword;
 
 		if (!apakahUserPunyaData) return false;
-		if (dataUser.nama && !apakahInputNamaHanyaBerupaHuruf(dataUser.nama)) return false;
+		if (dataUser.name && !apakahInputNamaHanyaBerupaHuruf(dataUser.name)) return false;
 		if (!cekFormatEmail) return false;
 
 		if (!isLogin) {
@@ -174,7 +175,7 @@
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-	<div class="w-full max-w-md">
+	<div class="w-full max-w-4xl">
 		<!-- Header -->
 		<div class="mb-8 text-center">
 			<h1 class="mb-2 text-2xl font-bold text-gray-900">
@@ -186,90 +187,65 @@
 		</div>
 
 		<!-- Form Container -->
-		<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+		<div class="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
 			<!-- Toggle Buttons -->
-			<div class="mb-6 flex rounded-lg bg-gray-100 p-1">
-				<button
-					onclick={() => (isLogin = true)}
-					class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 {isLogin
-						? 'bg-white text-gray-900 shadow-sm'
-						: 'text-gray-600 hover:text-gray-900'}"
-				>
-					Masuk
-				</button>
-				<button
-					onclick={() => (isLogin = false)}
-					class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 {!isLogin
-						? 'bg-white text-gray-900 shadow-sm'
-						: 'text-gray-600 hover:text-gray-900'}"
-				>
-					Daftar
-				</button>
+			<div class="mb-8 flex justify-center">
+				<div class="flex rounded-lg bg-gray-100 p-1 w-80">
+					<button
+						onclick={() => (isLogin = true)}
+						class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 {isLogin
+							? 'bg-white text-gray-900 shadow-sm'
+							: 'text-gray-600 hover:text-gray-900'}"
+					>
+						Masuk
+					</button>
+					<button
+						onclick={() => (isLogin = false)}
+						class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 {!isLogin
+							? 'bg-white text-gray-900 shadow-sm'
+							: 'text-gray-600 hover:text-gray-900'}"
+					>
+						Daftar
+					</button>
+				</div>
 			</div>
 
 			<!-- Form -->
-			<form class="space-y-4" onsubmit={(e) => handleLogin(e)}>
-				<!-- Name Field (Only for Register) -->
-				{#if !isLogin}
-					<div>
-						<label for="name" class="mb-1 block text-sm font-medium text-gray-700">
-							Nama Lengkap
-						</label>
-						<input
-							bind:value={dataUser.nama}
-							type="text"
-							id="name"
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
-							placeholder="Masukkan nama lengkap"
-						/>
+			<form class="space-y-6" onsubmit={handleLogin}>
+				{#if isLogin}
+					<!-- Login Form - Vertical Layout -->
+					<div class="space-y-6">
+						<!-- Email Field -->
+						<div>
+							<label for="email" class="mb-1 block text-sm font-medium text-gray-700">
+								Email
+							</label>
+							<input
+								bind:value={dataUser.email}
+								type="email"
+								id="email"
+								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
+								placeholder="Masukkan email"
+							/>
+						</div>
+
+						<!-- Password Field -->
+						<div>
+							<label for="password" class="mb-1 block text-sm font-medium text-gray-700">
+								Password
+							</label>
+							<input
+								bind:value={dataUser.password}
+								type="password"
+								id="password"
+								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
+								placeholder="Masukkan password"
+							/>
+						</div>
 					</div>
-				{/if}
 
-				<!-- Email Field -->
-				<div>
-					<label for="email" class="mb-1 block text-sm font-medium text-gray-700"> Email </label>
-					<input
-						bind:value={dataUser.email}
-						type="email"
-						id="email"
-						class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
-						placeholder="Masukkan email"
-					/>
-				</div>
-
-				<!-- Password Field -->
-				<div>
-					<label for="password" class="mb-1 block text-sm font-medium text-gray-700">
-						Password
-					</label>
-					<input
-						bind:value={dataUser.password}
-						type="password"
-						id="password"
-						class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
-						placeholder="Masukkan password"
-					/>
-				</div>
-
-				<!-- Confirm Password Field (Only for Register) -->
-				{#if !isLogin}
-					<div>
-						<label for="confirmPassword" class="mb-1 block text-sm font-medium text-gray-700">
-							Konfirmasi Password
-						</label>
-						<input
-							bind:value={dataUser.confirmPassword}
-							type="password"
-							id="confirmPassword"
-							class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
-							placeholder="Konfirmasi password"
-						/>
-					</div>
-				{/if}
-
-				<!-- Remember Me / Terms (Conditional) -->
-				<div class="flex items-center justify-between">
-					{#if isLogin}
+					<!-- Remember Me / Forgot Password -->
+					<div class="flex items-center justify-between">
 						<label class="flex items-center">
 							<input
 								type="checkbox"
@@ -277,10 +253,86 @@
 							/>
 							<span class="ml-2 text-sm text-gray-600">Ingat saya</span>
 						</label>
-						<button onclick={() => {}} class="text-sm text-gray-600 underline hover:text-gray-900">
+						<button type="button" onclick={() => {}} class="text-sm text-gray-600 underline hover:text-gray-900">
 							Lupa password?
 						</button>
-					{:else}
+					</div>
+				{:else}
+					<!-- Register Form - 2 Column Layout -->
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<!-- Name Field -->
+						<div>
+							<label for="name" class="mb-1 block text-sm font-medium text-gray-700">
+								Nama Lengkap
+							</label>
+							<input
+								bind:value={dataUser.name}
+								type="text"
+								id="name"
+								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
+								placeholder="Masukkan nama lengkap"
+							/>
+						</div>
+
+						<!-- Email Field -->
+						<div>
+							<label for="email" class="mb-1 block text-sm font-medium text-gray-700">
+								Email
+							</label>
+							<input
+								bind:value={dataUser.email}
+								type="email"
+								id="email"
+								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
+								placeholder="Masukkan email"
+							/>
+						</div>
+
+						<!-- Phone Field -->
+						<div>
+							<label for="telepon" class="mb-1 block text-sm font-medium text-gray-700">
+								Nomor Telepon
+							</label>
+							<input
+								bind:value={dataUser.telepon}
+								type="tel"
+								id="telepon"
+								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
+								placeholder="Masukan nomor telepon"
+							/>
+						</div>
+
+						<!-- Password Field -->
+						<div>
+							<label for="password" class="mb-1 block text-sm font-medium text-gray-700">
+								Password
+							</label>
+							<input
+								bind:value={dataUser.password}
+								type="password"
+								id="password"
+								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
+								placeholder="Masukkan password"
+							/>
+						</div>
+
+						<!-- Confirm Password Field - Full Width -->
+						<div class="md:col-span-2">
+							<label for="confirmPassword" class="mb-1 block text-sm font-medium text-gray-700">
+								Konfirmasi Password
+							</label>
+							<input
+								bind:value={dataUser.confirmPassword}
+								type="password"
+								id="confirmPassword"
+								class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500"
+								placeholder="Konfirmasi password"
+							/>
+						</div>
+					</div>
+
+					<!-- Terms Agreement -->
+					<div class="flex items-start justify-center">
 						<label class="flex items-start">
 							<input
 								bind:checked={isPolicyChecked}
@@ -294,31 +346,33 @@
 								>
 							</span>
 						</label>
-					{/if}
-				</div>
+					</div>
+				{/if}
 
 				<!-- Submit Button -->
-				<Button
-					disabled={!isPolicyChecked && !isLogin}
-					variant="default"
-					type="submit"
-					class={`w-full rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200`}
-				>
-					{#if sedangMengirimKeServer}
-						<span class="flex animate-spin items-center justify-center">
-							<Icon icon="picon:spinner" width="8" height="8" />
-						</span>
-					{:else}
-						{isLogin ? 'Masuk' : 'Daftar'}
-					{/if}
-				</Button>
+				<div class="flex justify-center">
+					<button
+						disabled={!isPolicyChecked && !isLogin}
+						type="submit"
+						class="w-full max-w-xs rounded-md px-8 py-2 text-sm font-medium transition-colors duration-200 bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+					>
+						{#if sedangMengirimKeServer}
+							<span class="flex animate-spin items-center justify-center">
+								<Icon icon="picon:spinner" width="16" height="16" />
+							</span>
+						{:else}
+							{isLogin ? 'Masuk' : 'Daftar'}
+						{/if}
+					</button>
+				</div>
 			</form>
 
 			<!-- Footer Text -->
-			<div class="mt-6 text-center">
+			<div class="mt-8 text-center">
 				<p class="text-sm text-gray-600">
 					{isLogin ? 'Belum punya akun?' : 'Sudah punya akun?'}
 					<button
+						type="button"
 						onclick={() => (isLogin = !isLogin)}
 						class="ml-1 font-medium text-gray-900 hover:underline"
 					>

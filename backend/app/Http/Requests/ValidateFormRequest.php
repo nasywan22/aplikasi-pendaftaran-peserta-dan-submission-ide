@@ -22,7 +22,8 @@ class ValidateFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nama"=> "string",
+            "name"=> "string",
+            "telepon"=> "string|max:15",
             "email"=> "required|email",
             "password"=> "required",
         ];
