@@ -9,5 +9,5 @@ Route::middleware(["guest","throttle:6,1"])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::post('/user', fn(Request $request) => $request->user());
+    Route::post('/user', fn(Request $request) => Auth::user());
 });
