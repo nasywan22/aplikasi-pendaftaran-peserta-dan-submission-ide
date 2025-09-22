@@ -11,6 +11,20 @@ use Illuminate\Support\Facades\Http;
 
 class UniversalUserController extends Controller
 {
+    public function ambilDataProfilUser()
+    {
+        $dataProfilUser = \DB::table("profiles")
+            ->join("users", "users.id", "=", "profiles.user_id")
+            ->join("provinsi", "provinsi.id","=","profiles.provinsi_id")
+            ->join("kabupaten", "kabupaten.id", "=", "profiles.kabupaten_id")
+            ->join("kecamatan", "kecamatan.id", "=", "profiles.kecamatan_id")
+            ->join("kelurahan", "kelurahan.id", "=", "profiles.kelurahan_id")
+            ->select("users.nama", "school", "nama_provinsi", "nama_kabupaten", "nama_kecamatan", "nama_kelurahan", "photo")
+            ->get();
+
+        return response()->json($dataProfilUser, 200);
+    }
+
     public function register(ValidateFormRequest $request): JsonResponse
     {
         $dataHasilValidasi = $request->validated();

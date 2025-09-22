@@ -19,16 +19,16 @@
 	} from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import * as Dialog from "$lib/components/ui/dialog";
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
 	// icons
 	import Icon from '@iconify/svelte';
 
 	// import milik sendiri
-	import { ambilCSRFTokenDariLaravel } from '$lib/scripts/ambilCSRFToken';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { Root } from '$lib/components/ui/avatar';
+	import AlertDialogProfilTidakLengkap from '$lib/components/AlertDialogProfilTidakLengkap.svelte';
+	import { cekProfilUser } from '$lib/scripts/cekProfilUser';
 
 	// HOOKS DATA
 	let user = $state<{
@@ -39,8 +39,9 @@
 		email: ''
 	});
 
-	// NON HOOKS DATA
+	// HOOKS/STATE DATA
 	let isLoading = $state<boolean>(false);
+	let isOpen = $state<boolean>(false);
 
 	// Mock data
 	let recentForms = [
@@ -81,9 +82,18 @@
 	// HOOK HANDLERS
 	onMount(async () => {
 		try {
+			await cekAkunUser();
+			await cekProfilUser();
+		} catch (error) {
+			isOpen = true;
+		}
+	});
+
+	// function
+	async function cekAkunUser() {
+		try {
 			isLoading = true;
-			await ambilCSRFTokenDariLaravel();
-			const response: AxiosResponse<any, any, {}> = await api.post('/user');
+			const response: AxiosResponse<any, any, {}> = await api.get('/user');
 
 			const data: {
 				nama: string;
@@ -98,15 +108,14 @@
 		} catch (error) {
 			goto('/logReg?lastPage=formSubmission');
 		}
-	});
+	}
 </script>
 
 {#if isLoading}
 	<p>Loading...</p>
 {:else}
-	<Dialog.Root>
-		
-	</Dialog.Root>
+	<!-- Alert Dialog -->
+	<AlertDialogProfilTidakLengkap bind:isOpen />
 
 	<div class="bg-background min-h-screen">
 		<!-- Header -->
@@ -129,7 +138,7 @@
 										Silahkan tekan tombol dibawah ini untuk membuat form
 									</p>
 								</div>
-								<Button class="items-center gap-2" variant="default">
+								<Button class="items-center gap-2" variant="default" onclick={() => goto('/form')}>
 									<Icon icon="lucide:plus" class="h-4 w-4" />
 									Create New Form
 								</Button>

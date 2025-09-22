@@ -11,6 +11,9 @@
 	// icons
 	import Icon from '@iconify/svelte';
 
+	// import milik sendiri
+	import DropdownProfile from './DropdownProfile.svelte';
+
 	// types
 	interface propsTypes {
 		user?: {
@@ -25,7 +28,7 @@
 	// state
 	let mobileMenuOpen = $state<boolean>(false);
 	let pathSaatIni = $state<string>();
-	const namaUser = $state<string>(props.user?.nama ?? '');
+	const namaUser = $state<string | null>(props.user?.nama ?? null);
 
 	// lifecycle
 	onMount(() => {
@@ -58,7 +61,7 @@
 							Submit Ide
 						</a>
 					{/if}
-					{#if props.user != null}
+					{#if namaUser != null}
 						<div class="flex flex-row items-center gap-3">
 							<!-- avatar -->
 							<div>
@@ -73,23 +76,7 @@
 
 							<!-- Dropdown -->
 							<div class="flex items-center">
-								<Dropdown.Root>
-									<Dropdown.Trigger>
-										<Icon icon="iconamoon:arrow-down-2-light" width="20" height="20" />
-									</Dropdown.Trigger>
-									<Dropdown.Content>
-										<Dropdown.Content>
-											<Dropdown.Group>
-												<Dropdown.Label>My Account</Dropdown.Label>
-												<Dropdown.Separator />
-												<Dropdown.Item>Profile</Dropdown.Item>
-												<Dropdown.Item>Billing</Dropdown.Item>
-												<Dropdown.Item>Team</Dropdown.Item>
-												<Dropdown.Item>Subscription</Dropdown.Item>
-											</Dropdown.Group>
-										</Dropdown.Content>
-									</Dropdown.Content>
-								</Dropdown.Root>
+								<DropdownProfile />
 							</div>
 						</div>
 					{:else}

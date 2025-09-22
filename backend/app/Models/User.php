@@ -13,6 +13,11 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
+    public function userRelation()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

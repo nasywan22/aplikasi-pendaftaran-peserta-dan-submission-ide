@@ -1,7 +1,6 @@
 <script lang="ts">
 	// import dan komponent milik sendiri
 	import api from '$lib/axiosConfig';
-	import { ambilCSRFTokenDariLaravel } from '$lib/scripts/ambilCSRFToken';
 
 	import Header from '../lib/components/Navbar.svelte';
 	import HeroSection from '../lib/components/HeroSection.svelte';
@@ -24,8 +23,7 @@
 	// lifesycle
 	onMount(async () => {
 		try {
-			await ambilCSRFTokenDariLaravel();
-			const response: AxiosResponse<any, any, {}> = await api.post('/user');
+			const response: AxiosResponse<any, any, {}> = await api.get('/user');
 
 			const data: {
 				nama: string;
@@ -42,8 +40,10 @@
 
 <div class="bg-background min-h-screen">
 	{#if user.nama}
-    <Header {user} />
-  {/if}
+		<Header {user} />
+	{:else}
+		<Header />
+	{/if}
 	<main>
 		<HeroSection />
 		<FeaturesSection />
