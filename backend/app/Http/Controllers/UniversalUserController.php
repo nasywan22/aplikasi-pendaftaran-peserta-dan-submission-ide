@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use \Illuminate\Support\Facades\Storage;
 
 class UniversalUserController extends Controller
 {
@@ -23,6 +24,46 @@ class UniversalUserController extends Controller
             ->get();
 
         return response()->json($dataProfilUser, 200);
+    }
+
+    public function masukkanDataProfilUser(Request $request)
+    {
+        $dataHasilValidasi = $request->validate([
+            "sekolah"=> "required|string|max:255",
+            'provinsi' => 'required|integer|exists:provinsi,id',
+            'kabupaten' => 'required|integer|exists:kabupaten,id',
+            'kecamatan' => 'required|integer|exists:kecamatan,id',
+            'kelurahan' => 'required|integer|exists:kelurahan,id',
+            'photo'=> 'required|image|mimes:jpeg,jpg|max:2048',
+        ]);
+
+        $fileFoto = $dataHasilValidasi['photo'];
+
+        if (!is_uploaded_file($fileFoto)) {
+            return response()->json([
+                "message" => "Foto tidak valid. Pastikan foto yang diupload dalam format jpeg atau jpg dan ukurannya tidak lebih dari 2048 KB",
+            ], 422);
+        }
+
+        $pathFoto = \Storage::put('public/foto', $fileFoto);
+
+        try {
+            $userProfile = \App\Models\UserProfile::create([
+                "user_id" => Auth::id(),
+                "school" => $dataHasilValidasi["sekolah"],
+                "provinsi_id" => $dataHasilValidasi["provinsi"],
+                "kabupaten_id" => $dataHasilValidasi["kabupaten"],
+                "kecamatan_id" => $dataHasilValidasi["kecamatan"],
+                "kelurahan_id" => $dataHasilValidasi["kelurahan"],
+                "photo" => $pathFoto,
+            ]);
+
+            return response()->json($userProfile,200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "message" => "Gagal mengupdate profil. Error message: " . $th->getMessage(),
+            ], 500);
+        }
     }
 
     public function register(ValidateFormRequest $request): JsonResponse
