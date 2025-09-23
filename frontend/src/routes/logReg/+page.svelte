@@ -24,6 +24,7 @@
 		telepon?: string;
 		password: string;
 		'g-recaptcha-response': string;
+		rememberMe?: boolean;
 		confirmPassword?: string;
 	}
 
@@ -31,7 +32,8 @@
 	let dataUser = $state<dataUserTypes>({
 		email: '',
 		password: '',
-		'g-recaptcha-response': ''
+		'g-recaptcha-response': '',
+		rememberMe: false
 	});
 
 	// trackers hooks
@@ -47,7 +49,6 @@
 	});
 
 	$effect(() => {
-		ambilCSRFCookie();
 		if (sedangMengirimKeServer && !isLogin) {
 			AksiAutentikasi('register');
 		} else if (sedangMengirimKeServer && isLogin) {
@@ -56,14 +57,6 @@
 	});
 
 	// FUNCTIONS
-	async function ambilCSRFCookie() {
-		try {
-			await api.get('/sanctum/csrf-cookie');
-		} catch (error) {
-			console.error(error);
-		}
-	}
-
 	function ambilPageTujuanTerakhirDiParameter() {
 		const seluruhData: string = window.location.search;
 		const parameter: URLSearchParams = new URLSearchParams(seluruhData);
@@ -275,6 +268,7 @@
 							<input
 								type="checkbox"
 								class="rounded border-gray-300 text-gray-600 focus:ring-gray-500"
+								bind:checked={dataUser.rememberMe}
 							/>
 							<span class="ml-2 text-sm text-gray-600">Ingat saya</span>
 						</label>

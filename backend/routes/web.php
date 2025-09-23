@@ -13,6 +13,8 @@ Route::middleware(["guest", "throttle:6,1"])->group(function () {
 Route::get('/user', fn() => Auth::user())
     ->middleware('auth');
 
+Route::get('/ambildomisili', [\App\Http\Controllers\domisili::class, 'ambilDomisili']);
+
 Route::middleware(Profil::class)
     ->get("/cekProfil", fn() => response()->json(["message" => "Profil user lengkap"], 200));
 // =============================================================================================

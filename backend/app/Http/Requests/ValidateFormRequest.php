@@ -22,11 +22,12 @@ class ValidateFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name"=> "string",
-            "telepon"=> "string|max:15",
+            "name"=> "nullable|string",
+            "telepon"=> "nullable|string|max:15",
             "email"=> "required|email",
             "password"=> "required",
             "g-recaptcha-response"=> "required",
+            "rememberMe"=> "sometimes|boolean",
         ];
     }
 }

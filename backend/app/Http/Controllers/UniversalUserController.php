@@ -75,7 +75,9 @@ class UniversalUserController extends Controller
             "password"=> $dataHasilValidasi["password"],
         ];
 
-        if (!Auth::attempt($dataHasilValidasi)) {
+        $rememberUser = $request->input("rememberMe", false);
+
+        if (!Auth::attempt($dataHasilValidasi, $rememberUser)) {
             return response()->json([
                 "message"=> "Kayaknya antara email atau password kamu ada yang salah nih... coba cek lagi",
             ], 401);
