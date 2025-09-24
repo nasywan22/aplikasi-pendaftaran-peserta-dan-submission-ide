@@ -16,5 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/kirimprofil', [\App\Http\Controllers\UniversalUserController::class, 'masukkanDataProfilUser']);
 });
 
-Route::middleware(Profil::class)
-    ->get("/cekProfil", fn() => response()->json(["message" => "Profil user lengkap"], 200));
+Route::middleware([Profil::class])->group(function () {
+    Route::get("/cekProfil", fn() => response()->json(["message" => "Profil user lengkap"], 200));
+    Route::get('/ambilprofil', [\App\Http\Controllers\UniversalUserController::class, 'ambilDataProfilUser']);
+});

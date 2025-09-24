@@ -8,7 +8,16 @@ class UserProfile extends Model
 {
     protected $table = "profiles";
 
-    protected $fillable = "*";
+    protected $fillable = [
+        'user_id',
+        'school',
+        'provinsi_id',
+        'kabupaten_id',
+        'kecamatan_id',
+        'kelurahan_id',
+        'photo',
+    ];
+
 
     public function profileRelation()
     {

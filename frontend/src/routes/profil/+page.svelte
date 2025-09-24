@@ -6,6 +6,7 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 	import { notifError, notifSuccess } from '$lib/scripts/notif';
 	import api from '$lib/axiosConfig';
+	import { base64ToObjectURL } from '$lib/scripts/objectURLConverter';
 
 	// type
 	interface DomisiliStore {
@@ -21,6 +22,15 @@
 		kabupaten: number;
 		kecamatan: number;
 		kelurahan: number;
+		photo: string;
+	}
+
+	interface ProfileResponse {
+		school: string;
+		nama_provinsi: string;
+		nama_kabupaten: string;
+		nama_kecamatan: string;
+		nama_kelurahan: string;
 		photo: string;
 	}
 
@@ -41,14 +51,34 @@
 		kelurahan: []
 	});
 
+	let user = $state<{
+		nama: string;
+		email: string;
+	}>({
+		nama: '',
+		email: ''
+	});
+
 	const formData = new FormData();
 
 	// lifecycle
 	onMount(async () => {
 		try {
-			domisiliStore = await ngambilDomisili();
+			// cek akun user
+			const dataUser = (await ngambilData('/user')) as typeof user;
+			user = {
+				nama: dataUser.nama,
+				email: dataUser.email
+			};
+
+			// ambil domisili
+			domisiliStore = (await ngambilData('/ambildomisili')) as DomisiliStore;
+
+			// mengambil data user profil
+			const tempProfile = ((await ngambilData('/ambilprofil')) as ProfileResponse[])[0];
+			masukkanDataProfilMentahKeProfilState(tempProfile);
 		} catch (error) {
-			notifError('gagal ngambil data domisili :(', 'Silahkan coba lagi yaa...');
+			notifError('gagal ngambil data domisili atau profil :(', 'Silahkan coba lagi yaa...');
 		}
 	});
 
@@ -59,10 +89,34 @@
 	});
 
 	// function
-	function ngambilDomisili(): Promise<DomisiliStore> {
+	function masukkanDataProfilMentahKeProfilState(tempProfile: ProfileResponse) {
+		// konversi nama → id
+		const prov = domisiliStore.provinsi.find((p) => p.nama_provinsi === tempProfile.nama_provinsi);
+		if (prov) profile.provinsi = prov.id;
+
+		const kab = domisiliStore.kabupaten.find(
+			(k) => k.nama_kabupaten === tempProfile.nama_kabupaten
+		);
+		if (kab) profile.kabupaten = kab.id;
+
+		const kec = domisiliStore.kecamatan.find(
+			(k) => k.nama_kecamatan === tempProfile.nama_kecamatan
+		);
+		if (kec) profile.kecamatan = kec.id;
+
+		const kel = domisiliStore.kelurahan.find(
+			(k) => k.nama_kelurahan === tempProfile.nama_kelurahan
+		);
+		if (kel) profile.kelurahan = kel.id;
+
+		profile.sekolah = tempProfile.school;
+		profile.photo = base64ToObjectURL(tempProfile.photo) ?? "";
+	}
+
+	function ngambilData(path: string) {
 		return new Promise((resolve, reject) => {
 			api
-				.get('/ambildomisili')
+				.get(path)
 				.then((response) => {
 					resolve(response.data);
 				})
@@ -80,10 +134,10 @@
 
 	function convertKeFormData() {
 		formData.append('sekolah', profile.sekolah);
-		formData.append('provinsi', String(profile.provinsi));
-		formData.append('kabupaten', String(profile.kabupaten));
-		formData.append('kecamatan', String(profile.kecamatan));
-		formData.append('kelurahan', String(profile.kelurahan));
+		formData.append('provinsi', String(profile.provinsi || ''));
+		formData.append('kabupaten', String(profile.kabupaten || ''));
+		formData.append('kecamatan', String(profile.kecamatan || ''));
+		formData.append('kelurahan', String(profile.kelurahan || ''));
 	}
 
 	function kirimDataProfil() {
@@ -95,6 +149,7 @@
 				})
 				.catch((error) => {
 					console.error(error);
+					notifError('antara di sistem kita atau di input kamu ada yang salah nih', error);
 					reject(error);
 				});
 		});
@@ -139,7 +194,9 @@
 
 <div class="bg-background min-h-screen">
 	<!-- navbar -->
-	<Navbar />
+	{#if user != null && profile.photo !== ''}
+		<Navbar {user} fotoProfil={profile.photo} />
+	{/if}
 
 	<div class="mx-auto max-w-6xl p-6">
 		<!-- Header -->

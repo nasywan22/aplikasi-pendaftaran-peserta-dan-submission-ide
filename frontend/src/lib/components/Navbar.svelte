@@ -20,6 +20,7 @@
 			nama?: string;
 			email?: string;
 		};
+		fotoProfil?: string;
 	}
 
 	// props
@@ -29,6 +30,7 @@
 	let mobileMenuOpen = $state<boolean>(false);
 	let pathSaatIni = $state<string>();
 	const namaUser = $state<string | null>(props.user?.nama ?? null);
+	const fotoProfil = $state<string>(props?.fotoProfil ?? "");
 
 	// lifecycle
 	onMount(() => {
@@ -66,8 +68,8 @@
 							<!-- avatar -->
 							<div>
 								<Avatar.Root>
-									<Avatar.Image src="https://github.com/shadcn.png" alt="Shadcn" />
-									<Avatar.Fallback>SC</Avatar.Fallback>
+									<Avatar.Image src={fotoProfil} alt="Shadcn" />
+									<Avatar.Fallback>ID</Avatar.Fallback>
 								</Avatar.Root>
 							</div>
 
