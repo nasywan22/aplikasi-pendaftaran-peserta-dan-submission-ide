@@ -99,7 +99,7 @@
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 					class="hover:text-primary p-2"
 				>
-					hamburger
+					<Icon icon="fe:bar" width="24" height="24" />
 				</button>
 			</div>
 		</div>

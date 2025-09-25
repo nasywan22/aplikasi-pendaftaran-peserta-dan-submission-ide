@@ -155,4 +155,21 @@ class UniversalUserController extends Controller
             "message" => "Berhasil login! :D",
         ], 200);
     }
+
+    public function logout(Request $request)
+    {
+        try {
+            Auth::user()->setRememberToken(null);
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerate();
+            return response()->json([
+                "message" => "success logout",
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'errMessage' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

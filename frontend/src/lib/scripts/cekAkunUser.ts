@@ -8,7 +8,7 @@ interface User {
 
 export function cekAkunUser(): Promise<User> {
     return new Promise((resolve, reject) => {
-        api.get("/cekAkun")
+        api.get("/user")
             .then((response: AxiosResponse<any, any, {}>) => {
                 const data = response.data;
                 const user: User = {
