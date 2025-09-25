@@ -15,16 +15,17 @@ class UniversalUserController extends Controller
     {
         $dataProfilUser = \DB::table("profiles")
             ->join("users", "users.id", "=", "profiles.user_id")
-            ->join("provinsi", "provinsi.id","=","profiles.provinsi_id")
+            ->join("provinsi", "provinsi.id", "=", "profiles.provinsi_id")
             ->join("kabupaten", "kabupaten.id", "=", "profiles.kabupaten_id")
             ->join("kecamatan", "kecamatan.id", "=", "profiles.kecamatan_id")
             ->join("kelurahan", "kelurahan.id", "=", "profiles.kelurahan_id")
             ->select("school", "nama_provinsi", "nama_kabupaten", "nama_kecamatan", "nama_kelurahan", "photo")
+            ->where("profiles.user_id", Auth::id())
             ->get();
 
         if ($dataProfilUser->isEmpty()) {
             return response()->json([
-                'error'=> 'Data profil user tidak ditemukan',
+                'error' => 'Data profil user tidak ditemukan',
             ], 404);
         }
 
@@ -32,7 +33,7 @@ class UniversalUserController extends Controller
 
         if (!Storage::disk('private')->exists($photoUser)) {
             return response()->json([
-                'error'=> 'file tidak ditemukan',
+                'error' => 'file tidak ditemukan',
             ], 404);
         }
 
@@ -58,7 +59,7 @@ class UniversalUserController extends Controller
             'kabupaten' => 'required|integer|exists:kabupaten,id',
             'kecamatan' => 'required|integer|exists:kecamatan,id',
             'kelurahan' => 'required|integer|exists:kelurahan,id',
-            'photo' => 'required|image|mimes:jpeg,jpg|max:2048',
+            'photo' => 'required|image|mimes:jpeg,jpg,png|max:2048',
         ]);
 
         // Cast biar pasti integer
@@ -71,6 +72,7 @@ class UniversalUserController extends Controller
         $pathFoto = $fileFoto->store('public/foto');
 
         try {
+            \App\Models\UserProfile::where("user_id", Auth::id())->delete();
             $userProfile = \App\Models\UserProfile::create([
                 'user_id' => Auth::id(),
                 'school' => $dataHasilValidasi['sekolah'],
@@ -80,7 +82,6 @@ class UniversalUserController extends Controller
                 'kelurahan_id' => $dataHasilValidasi['kelurahan'],
                 'photo' => $pathFoto,
             ]);
-
             return response()->json($userProfile, 200);
         } catch (\Throwable $th) {
             \Log::error($th);

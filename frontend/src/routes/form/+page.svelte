@@ -32,6 +32,9 @@
 
 	const formdata = new FormData();
 
+	// trackers
+	let isLoading = $state<boolean>(false);
+
 	// lifecycle
 	onMount(() => {
 		cekAkunUser()
@@ -56,10 +59,12 @@
 		formdata.append('deskripsi', formData.deskripsi);
 
 		// kirim form
+		isLoading = true;
 		api
 			.post('/kiriminovasi', formdata)
 			.then((response) => notifSuccess(response.data.message, 'kalo mau kirim lagi silahkan'))
-			.catch((error) => notifError('Waduh ada yang salah nih', error));
+			.catch((error) => notifError('Waduh ada yang salah nih', error))
+			.finally(() => isLoading = false);
 	}
 
 	function handleFileUpload(event: Event & { currentTarget: EventTarget }) {
@@ -142,7 +147,11 @@
 			onclick={handleSubmit}
 			class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-8 py-3 font-medium transition-colors"
 		>
-			Submit Innovation
+			{#if !isLoading}
+				Submit Innovation
+			{:else}
+				<Icon icon="line-md:loading-loop" width="24" height="24" />
+			{/if}
 		</button>
 	</div>
 

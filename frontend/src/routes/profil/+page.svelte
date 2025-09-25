@@ -2,6 +2,9 @@
 	// svelte tools
 	import { onMount } from 'svelte';
 
+	// icons
+	import Icon from '@iconify/svelte';
+
 	// import milik sendiri
 	import Navbar from '$lib/components/Navbar.svelte';
 	import { notifError, notifSuccess } from '$lib/scripts/notif';
@@ -61,6 +64,9 @@
 
 	const formData = new FormData();
 
+	// trackers
+	let isLoading = $state<boolean>(false);
+
 	// lifecycle
 	onMount(async () => {
 		try {
@@ -110,7 +116,7 @@
 		if (kel) profile.kelurahan = kel.id;
 
 		profile.sekolah = tempProfile.school;
-		profile.photo = base64ToObjectURL(tempProfile.photo) ?? "";
+		profile.photo = base64ToObjectURL(tempProfile.photo) ?? '';
 	}
 
 	function ngambilData(path: string) {
@@ -129,7 +135,9 @@
 
 	// functions
 	function cekTipeFile(file: File): boolean {
-		return file.type.startsWith('image/') && file.type.split('/').pop() === 'jpeg';
+		return (
+			file.type.startsWith('image/') && ['jpeg', 'png'].includes(file.type.split('/').pop() ?? '')
+		);
 	}
 
 	function convertKeFormData() {
@@ -141,17 +149,23 @@
 	}
 
 	function kirimDataProfil() {
+		isLoading = true;
 		return new Promise((resolve, reject) => {
 			api
 				.post('/kirimprofil', formData)
 				.then(() => {
+					notifSuccess('profil berhasil disimpan', 'ya gitulah');
 					resolve(true);
 				})
 				.catch((error) => {
 					console.error(error);
-					notifError('antara di sistem kita atau di input kamu ada yang salah nih', error);
+					notifError(
+						'ada yang salah sama di sistem kita atau di input kamu ada yang salah',
+						error.response.data.message
+					);
 					reject(error);
-				});
+				})
+				.finally(() => (isLoading = false));
 		});
 	}
 
@@ -182,13 +196,7 @@
 
 		convertKeFormData();
 
-		kirimDataProfil()
-			.then(() => {
-				notifSuccess('Profil kamu berhasil diubah', 'Selamat datang di InnovaHub');
-			})
-			.catch((error) => {
-				notifError('Waduh ada yang salah nih di sistem kitanya :(', 'Silahkan coba lagi yaa...');
-			});
+		kirimDataProfil();
 	};
 </script>
 
@@ -322,7 +330,11 @@
 								<button
 									class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-2 transition-colors"
 								>
-									Save Changes
+									{#if !isLoading}
+										Save Changes
+									{:else}
+										<Icon icon="line-md:loading-loop" width="24" height="24" />
+									{/if}
 								</button>
 							</div>
 						</div>
